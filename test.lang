@@ -1,5 +1,10 @@
 if "dedd" == "dedd" {
 	print "Hello world"
 	print "r"
+	if 2 == 2 {
+		print "Success"
+	}
+	if 1 == 2 {
+		print "Temp"
+	}
 }
-print "Success"
