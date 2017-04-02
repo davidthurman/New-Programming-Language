@@ -94,6 +94,9 @@ def lex(filecontents):
         elif tok == "IF" or tok == "if":
             tokens.append("IF")
             tok = ""
+        elif tok == "WHILE" or tok == "while":
+            tokens.append("WHILE")
+            tok = ""
         elif tok == "{":
             if expr != "" and isexpr == 0:
                 tokens.append("NUM:" + expr)
@@ -192,11 +195,12 @@ def doEvaluation(var1, operator, var2):
     if var1[:3] == "VAR":
         if var1[4:] in symbols:
             print(var1[4:])
+            var1 = symbols[var1[4:]]
         else:
             exit("Variable " + str(var1[4:]) + " not defined")
     if var2[:3] == "VAR":
         if var2[4:] in symbols:
-            print(var2[4:])
+            var2 = symbols[var2[4:]]
         else:
             exit("Variable " + str(var2[4:]) + " not defined")
     if operator == "EQEQ":
@@ -209,6 +213,7 @@ def doEvaluation(var1, operator, var2):
             return True
         else:
             return False
+    #LESS THAN
     elif operator == "LESS":
         if var1[:3] == "NUM" and var2[:3] == "NUM":
             if var1[4:] < var2[4:]:
@@ -220,8 +225,6 @@ def doEvaluation(var1, operator, var2):
                 return True
             else:
                 return False
-        else:
-            exit("Invalid Comparison")
     elif operator == "GREATER":
         if var1[:3] == "NUM" and var2[:3] == "NUM":
             if var1[4:] > var2[4:]:
@@ -271,6 +274,7 @@ def doInput(prompt, var):
 def parse(tokens):
     x = 0
     execute = 1
+    nestedCounter = 0
     print(tokens)
     while x < len(tokens):
         #print(x)
@@ -293,16 +297,46 @@ def parse(tokens):
                         symbols[tokens[x][4:]] = getVariable(tokens[x + 2])
                 x += 3
             elif tokens[x] == "IF":
+
                 if (doEvaluation(tokens[x + 1], tokens[x + 2], tokens[x + 3])):
                     execute = 1
                 else:
                     execute = 0
                 x += 4
             elif tokens[x] == "THEN" or tokens[x] == "END":
+                if tokens[x] == "THEN":
+                    nestedCounter += 1
+                elif tokens[x] == "END":
+                    nestedCounter -= 1
                 x += 1
+            elif tokens[x] == "WHILE":
+                if (doEvaluation(tokens[x + 1], tokens[x + 2], tokens[x + 3])):
+                    tokensInWhile = []
+                    loop = True
+                    counter = x + 4
+                    while loop:
+                        if tokens[counter] != "THEN" and tokens[counter] != "END":
+                            tokensInWhile.append(tokens[counter])
+                        else:
+                            if tokens[counter] == "THEN":
+                                print("{ FOUND")
+                            elif tokens[counter] == "END":
+                                print("} FOUND")
+                                loop = False
+                        counter += 1
+
+                    print(tokensInWhile)
+                    while doEvaluation(tokens[x + 1], tokens[x + 2], tokens[x + 3]):
+                        print("")
+                        parse(tokensInWhile)
+                    exit()
+                else:
+                    execute = 0
+
         else:
             if tokens[x] == "END":
-                execute = 1
+                if nestedCounter == 0:
+                    execute = 1
             x += 1
             
 
