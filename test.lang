@@ -1,4 +1,5 @@
-$x = 5
-if $x >= 5{
-	print "Sucess"
+$x = 1
+while $x < 4{
+	print "Hello"
+	$x = $x + 1
 }

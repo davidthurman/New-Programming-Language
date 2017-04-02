@@ -126,7 +126,7 @@ def lex(filecontents):
             tok = ""
 
 
-    print(tokens)
+    #print(tokens)
     #return ''
     return tokens
 
@@ -194,7 +194,6 @@ def doPrint(tok1, tok2):
 def doEvaluation(var1, operator, var2):
     if var1[:3] == "VAR":
         if var1[4:] in symbols:
-            print(var1[4:])
             var1 = symbols[var1[4:]]
         else:
             exit("Variable " + str(var1[4:]) + " not defined")
@@ -275,7 +274,7 @@ def parse(tokens):
     x = 0
     execute = 1
     nestedCounter = 0
-    print(tokens)
+    #print(tokens)
     while x < len(tokens):
         #print(x)
         if execute == 1:
@@ -293,8 +292,46 @@ def parse(tokens):
                         symbols[tokens[x][4:]] = "STR:" + str(tokens[x + 2][7:])
                     elif tokens[x + 2][:4] == "EXPR":
                         symbols[tokens[x][4:]] = "NUM:" + str(evalExpression(tokens[x + 2][5:]))
-                    elif tokens[x + 2][:3] == "VAR":
-                        symbols[tokens[x][4:]] = getVariable(tokens[x + 2])
+                    elif "VAR" in tokens[x + 2]:
+                        #THIS MAY NEED TO BE MOVED ELSEWHERE
+                        #if there is an operator then we need to evaluate the variable 
+                        if "+" in tokens[x + 2] or "-" in tokens[x + 2] or "*" in tokens[x + 2] or "/" in tokens[x + 2] or "%" in tokens[x + 2]:
+                            tokensToEval = []
+                            tok = ""
+                            y = 0
+                            isexpr = 0
+                            for char in tokens[x + 2]:
+                                if char == "+" or char == "-" or char == "%" or char == "*" or char == "/":
+                                    tokensToEval.append(tok)
+                                    tokensToEval.append(char)
+                                    tok = ""  
+                                else:
+                                    tok += char
+                                y += 1
+                                if y == len(tokens[x + 2]):
+                                    tokensToEval.append(tok)
+                            expressionToEval = ""
+                            for token in tokensToEval:
+                                if len(token) >= 4 or token[:1] == "$":
+                                    if token[:1] == "$":
+                                        if token in symbols:
+                                            print(symbols[token])
+                                            expressionToEval += symbols[token][4:]
+                                        else:
+                                            exit("Variable " + token + " not defined")
+                                    elif token[:4] == "VAR:":
+                                        if token[4:] in symbols:
+                                            expressionToEval += symbols[token[4:]][4:]
+                                        else:
+                                            exit("Variable " + token[4:] + " not defined")
+                                    else:
+                                        expressionToEval += token
+                                else:
+                                    expressionToEval += token
+                                
+                            symbols[tokens[x][4:]] = "NUM:" + str(eval(expressionToEval))
+                        else:
+                            symbols[tokens[x][4:]] = getVariable(tokens[x + 2])
                 x += 3
             elif tokens[x] == "IF":
 
@@ -325,9 +362,9 @@ def parse(tokens):
                                 loop = False
                         counter += 1
 
-                    print(tokensInWhile)
+                    #print(tokensInWhile)
                     while doEvaluation(tokens[x + 1], tokens[x + 2], tokens[x + 3]):
-                        print("")
+                        #print("")
                         parse(tokensInWhile)
                     exit()
                 else:
@@ -341,7 +378,7 @@ def parse(tokens):
             
 
 
-    print(symbols)
+    #print(symbols)
 
 
 def run():
