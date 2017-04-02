@@ -1,0 +1,5 @@
+if "dedd" == "dedd" {
+	print "Hello world"
+	print "r"
+}
+print "Success"
