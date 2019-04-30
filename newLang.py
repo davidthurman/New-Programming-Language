@@ -106,10 +106,10 @@ def lex(filecontents):
         elif tok == "INPUT" or tok == "input":
             tokens.append("INPUT")
             tok = ""
-        elif tok == "1" or tok == "2" or tok == "3" or tok == "4" or tok == "5" or tok == "6" or tok == "7" or tok == "8" or tok == "9" or tok == "0":
+        elif tok in ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]:
             expr += tok
             tok = ""
-        elif tok == "+" or tok == "-" or tok == "*" or tok == "/" or tok == "%" or tok == "(" or tok == ")":
+        elif tok in ["+", "-", "*", "/", "%", "(", ")"]:
             isexpr = 1
             expr += tok
             tok = ""
